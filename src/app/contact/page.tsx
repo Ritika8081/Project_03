@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Mail, MapPin, Phone, Send, Github, Linkedin, MessageCircle } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AnimatedSection, FadeIn } from '@/components/ui/animated-section';
+import { usePortfolioData } from '@/hooks/usePortfolioData';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -17,7 +17,16 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const { data: portfolioData, isLoading } = usePortfolioData();
   const { contact, personalInfo } = portfolioData;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

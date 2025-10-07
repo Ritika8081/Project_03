@@ -1,8 +1,12 @@
-import { Github, Linkedin, Mail, Heart } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+'use client';
+
+import { Github, Linkedin, Mail, Heart, Settings } from 'lucide-react';
+import { usePortfolioData } from '@/hooks/usePortfolioData';
+import Link from 'next/link';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { data: portfolioData } = usePortfolioData();
   const { contact, personalInfo } = portfolioData;
 
   const socialLinks = [
@@ -67,6 +71,14 @@ export default function Footer() {
             </p>
             <p className="text-gray-400 text-sm flex items-center mt-4 md:mt-0">
               Made with <Heart size={16} className="mx-1 text-red-500" /> using Next.js & TailwindCSS
+              <span className="mx-2">•</span>
+              <a 
+                href="/admin" 
+                className="hover:text-gray-300 transition-colors text-xs opacity-50 hover:opacity-100"
+                title="Admin Panel"
+              >
+                ⚙️
+              </a>
             </p>
           </div>
         </div>

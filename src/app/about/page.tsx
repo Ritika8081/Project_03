@@ -2,14 +2,23 @@
 
 import Image from 'next/image';
 import { Calendar, MapPin, Award, BookOpen, Briefcase, Download } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedSection, FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/animated-section';
 import { formatDate } from '@/lib/utils';
+import { usePortfolioData } from '@/hooks/usePortfolioData';
 
 export default function AboutPage() {
+  const { data: portfolioData, isLoading } = usePortfolioData();
   const { personalInfo, experience, education, skills } = portfolioData;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

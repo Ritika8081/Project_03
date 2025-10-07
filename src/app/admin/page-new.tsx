@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Download, Upload, Save, Settings, RefreshCw, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
-import { Project, PersonalInfo, Contact } from '@/types/portfolio';
+import { Project } from '@/types/portfolio';
 import ProjectManager from '@/components/project-manager';
-import PersonalInfoManager from '@/components/personal-info-manager';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AnimatedSection } from '@/components/ui/animated-section';
@@ -15,16 +14,12 @@ export default function AdminPage() {
     data: portfolioData, 
     isLoading,
     updateProjects,
-    updatePersonalInfo,
-    updateContact,
     exportAllData,
     importAllData,
     clearAllData
   } = usePortfolioData();
 
   const [localProjects, setLocalProjects] = useState<Project[]>([]);
-  const [localPersonalInfo, setLocalPersonalInfo] = useState<PersonalInfo>(portfolioData.personalInfo);
-  const [localContact, setLocalContact] = useState<Contact>(portfolioData.contact);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
@@ -32,19 +27,14 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isLoading) {
       setLocalProjects(portfolioData.projects);
-      setLocalPersonalInfo(portfolioData.personalInfo);
-      setLocalContact(portfolioData.contact);
     }
-  }, [portfolioData.projects, portfolioData.personalInfo, portfolioData.contact, isLoading]);
+  }, [portfolioData.projects, isLoading]);
 
   useEffect(() => {
     // Check if there are changes compared to stored data
-    const projectsChanged = JSON.stringify(localProjects) !== JSON.stringify(portfolioData.projects);
-    const personalInfoChanged = JSON.stringify(localPersonalInfo) !== JSON.stringify(portfolioData.personalInfo);
-    const contactChanged = JSON.stringify(localContact) !== JSON.stringify(portfolioData.contact);
-    const hasChanges = projectsChanged || personalInfoChanged || contactChanged;
+    const hasChanges = JSON.stringify(localProjects) !== JSON.stringify(portfolioData.projects);
     setHasChanges(hasChanges);
-  }, [localProjects, localPersonalInfo, localContact, portfolioData.projects, portfolioData.personalInfo, portfolioData.contact]);
+  }, [localProjects, portfolioData.projects]);
 
   const showMessage = (type: 'success' | 'error' | 'info', text: string) => {
     setMessage({ type, text });
@@ -53,11 +43,6 @@ export default function AdminPage() {
 
   const handleProjectsUpdate = (updatedProjects: Project[]) => {
     setLocalProjects(updatedProjects);
-  };
-
-  const handlePersonalInfoUpdate = (updatedPersonalInfo: PersonalInfo, updatedContact: Contact) => {
-    setLocalPersonalInfo(updatedPersonalInfo);
-    setLocalContact(updatedContact);
   };
 
   const handleExportData = () => {
@@ -89,8 +74,6 @@ export default function AdminPage() {
           if (importedData.projects && Array.isArray(importedData.projects)) {
             importAllData(importedData);
             setLocalProjects(importedData.projects);
-            if (importedData.personalInfo) setLocalPersonalInfo(importedData.personalInfo);
-            if (importedData.contact) setLocalContact(importedData.contact);
             showMessage('success', 'Data imported successfully! Your changes are now live.');
           } else {
             showMessage('error', 'Invalid data format. Please ensure the file contains valid portfolio data.');
@@ -111,8 +94,6 @@ export default function AdminPage() {
     setIsSaving(true);
     try {
       updateProjects(localProjects);
-      updatePersonalInfo(localPersonalInfo);
-      updateContact(localContact);
       showMessage('success', 'Changes saved successfully! Your portfolio is now updated.');
       setHasChanges(false);
     } catch (error) {
@@ -126,8 +107,6 @@ export default function AdminPage() {
     if (window.confirm('Are you sure you want to reset all data to the original portfolio? This will clear all your customizations.')) {
       clearAllData();
       setLocalProjects(portfolioData.projects);
-      setLocalPersonalInfo(portfolioData.personalInfo);
-      setLocalContact(portfolioData.contact);
       showMessage('info', 'Portfolio data has been reset to original state.');
     }
   };
@@ -296,13 +275,6 @@ For technical support, check the documentation in your project folder.
               )}
             </CardContent>
           </Card>
-
-          {/* Personal Information Manager */}
-          <PersonalInfoManager
-            personalInfo={localPersonalInfo}
-            contact={localContact}
-            onUpdate={handlePersonalInfoUpdate}
-          />
 
           {/* Project Manager */}
           <ProjectManager 

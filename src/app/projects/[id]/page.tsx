@@ -4,19 +4,38 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, ExternalLink, Github, Tag, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AnimatedSection, FadeIn } from '@/components/ui/animated-section';
 import { formatDate } from '@/lib/utils';
+import { usePortfolioData } from '@/hooks/usePortfolioData';
+import { useEffect, useState } from 'react';
+import { Project } from '@/types/portfolio';
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
-  const resolvedParams = await params;
-  const project = portfolioData.projects.find(p => p.id === resolvedParams.id);
+export default function ProjectPage({ params }: ProjectPageProps) {
+  const { data: portfolioData, isLoading } = usePortfolioData();
+  const [project, setProject] = useState<Project | null>(null);
+  const [projectId, setProjectId] = useState<string>('');
+
+  useEffect(() => {
+    params.then(resolvedParams => {
+      setProjectId(resolvedParams.id);
+      const foundProject = portfolioData.projects.find(p => p.id === resolvedParams.id);
+      setProject(foundProject || null);
+    });
+  }, [params, portfolioData.projects]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (!project) {
     notFound();

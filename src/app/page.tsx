@@ -3,16 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Download, Star, Users, Coffee, Award } from "lucide-react";
-import { portfolioData } from "@/data/portfolio";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ProjectCard from "@/components/project-card";
 import SkillsSection from "@/components/skills-section";
 import { AnimatedSection, FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
 import { motion } from "framer-motion";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export default function Home() {
+  const { data: portfolioData, isLoading } = usePortfolioData();
   const { personalInfo, projects, skills, experience } = portfolioData;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   const featuredProjects = projects.filter(project => project.featured).slice(0, 3);
   
   // Calculate stats

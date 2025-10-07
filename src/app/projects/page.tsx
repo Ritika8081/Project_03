@@ -2,18 +2,27 @@
 
 import { useState } from 'react';
 import { Filter, Search } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
 import { Project } from '@/types/portfolio';
 import ProjectCard from '@/components/project-card';
 import { Button } from '@/components/ui/button';
 import { AnimatedSection, StaggerContainer, StaggerItem } from '@/components/ui/animated-section';
+import { usePortfolioData } from '@/hooks/usePortfolioData';
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const { data: portfolioData, isLoading } = usePortfolioData();
   const { projects } = portfolioData;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   const categories = ['all', ...Array.from(new Set(projects.map(p => p.category)))];
   const statuses = ['all', ...Array.from(new Set(projects.map(p => p.status)))];
